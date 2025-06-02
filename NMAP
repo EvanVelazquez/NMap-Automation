@@ -1,0 +1,44 @@
+#!/bin/bash
+
+ 
+# Nmap Automation Script - Saves Scan Results in HTML
+
+# Check if an argument is provided
+
+if [ -z "$1" ]; then
+
+    echo "Usage: $0 <target_IP> [port_list]"
+
+    exit 1
+
+fi
+
+TARGET_IP=$1
+
+PORTS=${2:-"22,80,443,8080,3306"}  # Default ports if not provided
+
+OUTPUT_DIR="scan_results"
+
+OUTPUT_FILE="$OUTPUT_DIR/scan_report.html"
+
+# Create directory for scan results
+
+mkdir -p $OUTPUT_DIR
+
+
+echo "Starting Nmap scan on $TARGET_IP with OS and Service detection..."
+
+
+# Perform the Nmap scan with OS (-O) and Service (-sV) detection
+
+nmap -sS -sV -O -p $PORTS --open -oX $OUTPUT_DIR/scan_report.xml $TARGET_IP
+
+
+# Convert XML results to an HTML report using xsltproc
+
+xsltproc $OUTPUT_DIR/scan_report.xml -o $OUTPUT_FILE
+
+
+echo "Scan complete! Results saved in $OUTPUT_FILE"
+
+ 
